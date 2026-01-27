@@ -1,0 +1,14 @@
+# Ignorar dependências gigantes
+backend/node_modules/
+frontend/node_modules/
+node_modules/
+
+# Ignorar arquivos de build do Next.js
+frontend/.next/
+
+# SEGURANÇA: Ignorar arquivos de senha
+backend/.env
+.env
+
+# Arquivos de sistema
+.DS_Store
