@@ -8,7 +8,6 @@ export default function Home(){
   const [status, setStatus] = useState('Aguardando...');
 
   interface RespostaAPI{
-    mensagem: string;
     dados: {
         valor: string;
         id_banco: number;

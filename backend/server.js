@@ -5,6 +5,9 @@ const cors = require('cors');
 // Importa o robô que criamos
 const roboDolar = require('./robo-dolar');
 
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
 // Importa a conexão com o banco
 const pool = require('./database');
 
@@ -21,21 +24,24 @@ app.get('/api/cotacao', async (req, res) => {
         const valor = await roboDolar();
 
         if (valor) {
-            // Salva no banco de dados
-            //  o $1 é um placeholder de segurança (evita SQL Injection)
-            const query = 'INSERT INTO historico_dolar (valor) VALUES ($1) RETURNING *';
-            const resultadoDB = await pool.query (query, [valor]);
+            // --- A MÁGICA DO ORM ACONTECE AQUI ---
+            // Antes: "INSERT INTO historico_dolar..."
+            // Agora: Método JavaScript intuitivo
+            const resultadoDB = await prisma.historicoDolar.create({
+                data: {
+                    valor: valor
+                    // dataConsulta e id são preenchidos sozinhos
+                }
+            });
 
-            console.log("🔍 O BANCO DEVOLVEU ISSO AQUI:", resultadoDB.rows[0]);
-            console.log("Dado salvo no banco com ID:", resultadoDB.rows[0].id);
+            console.log("Salvo via Prisma:", resultadoDB);
 
             //  Sucesso! Devolvemos o JSON
             return res.json({
-                mensagem: "Sucesso!",
                 dados: {
-                    valor: valor,
-                    id_banco: resultadoDB.rows[0].id || resultadoDB.rows[0].ID,
-                    data_gravacao: resultadoDB.rows[0].data_consulta
+                    valor: resultadoDB.valor, 
+                    id_banco: resultadoDB.id,
+                    data_gravacao: resultadoDB.dataConsulta
                 }
             });
         } else {
@@ -51,5 +57,5 @@ app.get('/api/cotacao', async (req, res) => {
 
 // Inicia o servidor
 app.listen(PORT, () => {
-    console.log(`API rodando na porta ${PORT}`);
+    console.log(`API com prisma rodando na porta ${PORT}`);
 })
