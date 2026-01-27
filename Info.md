@@ -35,7 +35,7 @@
 # API REST e Verbos HTTP
 
 - GET: Usado para buscar dados
-- POST: Usado para cirar algo
+- POST: Usado para criar algo
 
   - Exemplo: Se você tivesse um formulário para cadastrar um novo site para o robô ler
 - PUT/PATCH: Atualizar dados
@@ -51,7 +51,6 @@
 - CORS
 - Explicação: Middleware é tudo que fica entre o pedido do usuário e a sua resposta. O cors() é uma segurança que parou a requisição, olhou o crachá e disse "Pode passar". Outro exemplo seria um middleware de auth que verifica se o usuário está logado.
 - Tudo que fica entre o PEDIDO e a RESPOSTA.
-
 
 # Async/Await
 
