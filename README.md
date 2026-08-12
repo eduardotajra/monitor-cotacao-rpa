@@ -10,11 +10,11 @@ RPA que extrai a cotação do dólar por automação de navegador, guarda o hist
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
 
-> 📸 *Screenshot pendente — ver [Como capturar](#como-capturar-o-screenshot) no fim deste arquivo.*
+> 📸 *Screenshot pendente. Veja [Como capturar](#como-capturar-o-screenshot) no fim deste arquivo.*
 
 ## O problema
 
-Cotação de moeda não tem API pública gratuita e confiável para todo mundo. A saída comum é abrir o site, olhar o número e anotar numa planilha — todo dia, na mão.
+Cotação de moeda não tem API pública gratuita e confiável para todo mundo. A saída comum é abrir o site, olhar o número e anotar numa planilha, todo dia, na mão.
 
 Este projeto troca essa rotina por um robô: ele abre o navegador sozinho, lê o valor na fonte, grava no banco com data e hora, e devolve tudo por uma API.
 
@@ -34,18 +34,16 @@ Servidor                     devolve JSON limpo para o front
 ```
 
 ## Funcionalidades
-
-- **Extração por automação de navegador** — Puppeteer em modo headless, com espera explícita pelo seletor antes de ler o valor (evita ler a página antes da hora)
-- **Histórico persistido** — cada consulta vira uma linha em `historico_dolar`, com data e hora automáticas
-- **API REST** — `GET /api/cotacao` dispara o robô e devolve o valor já salvo
-- **ORM em vez de SQL na mão** — Prisma cuida do schema e das queries
-- **Containerizado** — `Dockerfile` no back-end, com as flags necessárias para rodar o Chromium do Puppeteer dentro do container
+**:** Puppeteer em modo headless, com espera explícita pelo seletor antes de ler o valor (evita ler a página antes da hora)
+**:** cada consulta vira uma linha em `historico_dolar`, com data e hora automáticas
+**:** `GET /api/cotacao` dispara o robô e devolve o valor já salvo
+**:** Prisma cuida do schema e das queries
+**:** `Dockerfile` no back-end, com as flags necessárias para rodar o Chromium do Puppeteer dentro do container
 
 ## Stack
-
-**Back-end** — Node.js, Express 5, Puppeteer 24, Prisma 6, PostgreSQL, CORS, dotenv
-**Front-end** — Next.js (App Router), React, TypeScript, Tailwind CSS
-**Infra** — Docker
+**:** Node.js, Express 5, Puppeteer 24, Prisma 6, PostgreSQL, CORS, dotenv
+**:** Next.js (App Router), React, TypeScript, Tailwind CSS
+**:** Docker
 
 ## Estrutura
 
@@ -121,16 +119,16 @@ Ele imprime o valor encontrado no console, sem tocar no banco.
 ## Decisões técnicas
 
 **Por que Puppeteer e não uma API de câmbio?**
-O objetivo do projeto era justamente exercitar RPA — automatizar uma interação que hoje é feita por uma pessoa num navegador. Se existisse uma API boa, o projeto não teria razão de existir.
+O objetivo do projeto era justamente exercitar RPA, automatizar uma interação que hoje é feita por uma pessoa num navegador. Se existisse uma API boa, o projeto não teria razão de existir.
 
 **Por que `waitForSelector` antes de ler?**
-A primeira versão lia a página assim que carregava e às vezes vinha vazia. O valor entra no DOM depois do load inicial. Esperar o seletor específico resolveu de forma determinística — bem melhor que um `sleep` fixo, que ou é lento demais ou curto demais.
+A primeira versão lia a página assim que carregava e às vezes vinha vazia. O valor entra no DOM depois do load inicial. Esperar o seletor específico resolveu de forma determinística, bem melhor que um `sleep` fixo, que ou é lento demais ou curto demais.
 
 **Por que `$eval` com `.value` e não pegar o texto?**
 O valor no site fica dentro de um `<input>`, não de uma `<div>`. Ler `textContent` retorna string vazia. Foi um erro que custou um tempo até eu inspecionar o elemento e entender a diferença.
 
 **Por que Prisma?**
-Comecei com `INSERT INTO` escrito à mão via `pg`. Trocar por Prisma eliminou o SQL manual, deu tipagem no retorno das queries e passou a versionar o schema via migrations — que era o ponto que eu queria aprender.
+Comecei com `INSERT INTO` escrito à mão via `pg`. Trocar por Prisma eliminou o SQL manual, deu tipagem no retorno das queries e passou a versionar o schema via migrations, que era o ponto que eu queria aprender.
 
 **Por que o robô roda por requisição, e não num agendador?**
 Decisão consciente de escopo. Um `cron` que coleta de hora em hora seria mais útil na prática, e é a evolução natural. Como exercício, disparar sob demanda deixa o fluxo inteiro visível numa requisição só.
@@ -140,10 +138,10 @@ Necessário para o Chromium rodar dentro do container. Em produção real, o cer
 
 ## Limitações conhecidas
 
-- O robô depende do seletor `#nacional` da página de origem. Se o site mudar o HTML, quebra — fragilidade inerente a scraping.
+- O robô depende do seletor `#nacional` da página de origem. Se o site mudar o HTML, quebra. É fragilidade inerente a scraping.
 - `valor` é gravado como `String`, não como tipo numérico. Funciona, mas impede agregação no banco.
 - Sem testes automatizados.
-- Sem deploy público — o Puppeteer exige um ambiente com Chromium disponível, o que não cabe no plano gratuito da maioria dos serviços serverless.
+- Sem deploy público, porque o Puppeteer exige um ambiente com Chromium disponível, o que não cabe no plano gratuito da maioria dos serviços serverless.
 
 ## Como capturar o screenshot
 
